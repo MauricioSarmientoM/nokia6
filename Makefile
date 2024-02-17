@@ -368,7 +368,12 @@ endif
 # Default target entry
 # NOTE: We call this Makefile target or Makefile.Android target
 all:
-	rm -f $(PROJECT_NAME)
+	ifeq ($(PLATFORM_OS),LINUX)
+		rm -f $(PROJECT_NAME)
+	endif
+	ifeq ($(PLATFORM_OS),WINDOWS)
+		del $(PROJECT_NAME)
+	endif
 	$(MAKE) $(MAKEFILE_PARAMS)
 
 # Project target defined by PROJECT_NAME

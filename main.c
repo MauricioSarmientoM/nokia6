@@ -34,7 +34,7 @@ int main() {
 
     const float virtualRatio = (float)screenWidth/(float)virtualScreenWidth;
 
-    InitWindow(screenWidth, screenHeight, "Raylib - Nokia 3310 Jam");
+    InitWindow(screenWidth, screenHeight, "Raylib - Nokia 3310 Jam, oal");
     bool exitWindow = false;    // Flag to set window to exit
     Dialog dialog = {0,"Test", "Null", "NULL", 1};
 
