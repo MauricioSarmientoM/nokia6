@@ -146,6 +146,7 @@ EXAMPLE_RUNTIME_PATH   ?= $(RAYLIB_RELEASE_PATH)
 # Define default C compiler: gcc
 # NOTE: define g++ compiler if using C++
 CC = gcc
+
 ifeq ($(PLATFORM),PLATFORM_DESKTOP)
     ifeq ($(PLATFORM_OS),OSX)
         # OSX default compiler
@@ -154,11 +155,6 @@ ifeq ($(PLATFORM),PLATFORM_DESKTOP)
     ifeq ($(PLATFORM_OS),BSD)
         # FreeBSD, OpenBSD, NetBSD, DragonFly default compiler
         CC = clang
-    endif
-    ifeq ($(PLATFORM_OS),WINDOWS)
-        # Windows
-        CC = i686-w64-mingw32-gcc-win32
-        EXT = .exe
     endif
 endif
 ifeq ($(PLATFORM),PLATFORM_RPI)
@@ -176,16 +172,16 @@ ifeq ($(PLATFORM),PLATFORM_WEB)
 endif
 
 # Define default make program: Mingw32-make
-# MAKE = mingw32-make
+MAKE = mingw32-make
 
-# ifeq ($(PLATFORM),PLATFORM_DESKTOP)
-#    ifeq ($(PLATFORM_OS),LINUX)
-#        MAKE = make
-#    endif
-#    ifeq ($(PLATFORM_OS),OSX)
-#        MAKE = make
-#    endif
-# endif
+ifeq ($(PLATFORM),PLATFORM_DESKTOP)
+    ifeq ($(PLATFORM_OS),LINUX)
+        MAKE = make
+    endif
+    ifeq ($(PLATFORM_OS),OSX)
+        MAKE = make
+    endif
+endif
 
 # Define compiler flags:
 #  -O0                  defines optimization level (no optimization, better for debugging)
