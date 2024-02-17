@@ -56,13 +56,21 @@ int main() {
 
     float cameraX = 0.0f;
     float cameraY = 0.0f;
-    
+
     SetTargetFPS(60);           // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
     // Main game loop
     while (!exitWindow) {
         // Update
         //---------------------------------------------------------------------------------
+        // Round worldSpace coordinates, keep decimals into screenSpace coordinates
+        worldSpaceCamera.target.x = (int)screenSpaceCamera.target.x;
+        screenSpaceCamera.target.x -= worldSpaceCamera.target.x;
+        screenSpaceCamera.target.x *= virtualRatio;
+
+        worldSpaceCamera.target.y = (int)screenSpaceCamera.target.y;
+        screenSpaceCamera.target.y -= worldSpaceCamera.target.y;
+        screenSpaceCamera.target.y *= virtualRatio;
         // Detect if X-button or KEY_ESCAPE have been pressed to close window
         if (WindowShouldClose() || IsKeyPressed(KEY_ESCAPE)) exitWindow = true;
         if (IsKeyPressed(KEY_ENTER)) {
