@@ -26,16 +26,37 @@ void ParseDialog(char *line, Dialog *dialog);
 int main() {
     // Initialization
     //--------------------------------------------------------------------------------------
-    const int screenWidth = 84;
-    const int screenHeight = 48;
+    const int screenWidth = 840;
+    const int screenHeight = 480;
 
-    InitWindow(screenWidth, screenHeight, "Raylib");
+    const int virtualScreenWidth = 84;
+    const int virtualScreenHeight = 48;
 
-    SetExitKey(KEY_NULL);       // Disable KEY_ESCAPE to close window, X-button still works
-    bool exitWindowRequested = false;   // Flag to request window to exit
+    const float virtualRatio = (float)screenWidth/(float)virtualScreenWidth;
+
+    InitWindow(screenWidth, screenHeight, "Raylib - Nokia 3310 Jam");
     bool exitWindow = false;    // Flag to set window to exit
-    Dialog dialog = {0,"Test", "Null", "NULL", "null", 1};
-    Camera2D camera = { };
+    Dialog dialog = {0,"Test", "Null", "NULL", 1};
+
+    Camera2D worldSpaceCamera = { 0 };  // Game world camera
+    worldSpaceCamera.zoom = 1.0f;
+
+    Camera2D screenSpaceCamera = { 0 }; // Smoothing camera
+    screenSpaceCamera.zoom = 1.0f;
+
+    RenderTexture2D target = LoadRenderTexture(virtualScreenWidth, virtualScreenHeight); // This is where we'll draw all our objects.
+
+    // The target's height is flipped (in the source Rectangle), due to OpenGL reasons
+    Rectangle sourceRec = { 0.0f, 0.0f, (float)target.texture.width, -(float)target.texture.height };
+    Rectangle destRec = { -virtualRatio, -virtualRatio, screenWidth + (virtualRatio*2), screenHeight + (virtualRatio*2) };
+
+    Vector2 origin = { 0.0f, 0.0f };
+
+    float rotation = 0.0f;
+
+    float cameraX = 0.0f;
+    float cameraY = 0.0f;
+    
     SetTargetFPS(60);           // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
     // Main game loop
@@ -43,33 +64,20 @@ int main() {
         // Update
         //---------------------------------------------------------------------------------
         // Detect if X-button or KEY_ESCAPE have been pressed to close window
-        if (WindowShouldClose() || IsKeyPressed(KEY_ESCAPE)) exitWindowRequested = true;
-        if (exitWindowRequested) {
-            // A request for close window has been issued, we can save data before closing
-            // or just show a message asking for confirmation
-            if (IsKeyPressed(KEY_Y) || IsKeyPressed(KEY_ENTER)) exitWindow = true;
-            else if (IsKeyPressed(KEY_N) || IsKeyPressedRepeat(KEY_ESCAPE)) exitWindowRequested = false;
-        }
-        else {
-            if (IsKeyPressed(KEY_ENTER)) {
-                LoadDialog(dialog.next, &dialog);
-                //printf("Id: %d\tNext: %d\tFile: %s\n%s\n%s\n%s\n%s\n", dialog.id, dialog.next, dialog.file, dialog.name, dialog.line1, dialog.line2, dialog.line3);
-            }
+        if (WindowShouldClose() || IsKeyPressed(KEY_ESCAPE)) exitWindow = true;
+        if (IsKeyPressed(KEY_ENTER)) {
+            LoadDialog(dialog.next, &dialog);
+            //printf("Id: %d\tNext: %d\tFile: %s\n%s\n%s\n%s\n%s\n", dialog.id, dialog.next, dialog.file, dialog.name, dialog.line1, dialog.line2, dialog.line3);
         }
         //----------------------------------------------------------------------------------
         // Draw
         //----------------------------------------------------------------------------------
         BeginDrawing();
             ClearBackground(RAYWHITE);
-            if (exitWindowRequested) {
-                DrawText("Are you sure you want to exit program? [Y/N]", 160, 200, 20, LIGHTGRAY);
-            }
-            else {
-                if (dialog.id) {
-                    DrawText(dialog.name, 160, 300, 20, BLACK);
-                    DrawText(dialog.line1, 160, 320, 20, BLACK);
-                    DrawText(dialog.line2, 160, 340, 20, BLACK);
-                }
+            if (dialog.id) {
+                DrawText(dialog.name, 160, 300, 20, BLACK);
+                DrawText(dialog.line1, 160, 320, 20, BLACK);
+                DrawText(dialog.line2, 160, 340, 20, BLACK);
             }
         EndDrawing();
         //----------------------------------------------------------------------------------
